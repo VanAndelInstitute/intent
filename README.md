@@ -74,7 +74,7 @@ cp bin/intent /somewhere/on/your/PATH
         Options:
             -x               expanded barcodes and umi format (20 / 14) 
             -t               Chromium v2 barcode format (16 / 10) 
-            -d 2              Maximum W1 alignment distance (default = 2)
+            -d 2             Maximum W1 alignment distance (default = 2)
             -h               Print this help
 
 ## Contributing
