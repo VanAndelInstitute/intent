@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
   fstream r1, r2, r1_out, r2_out;
   string w1 = "GAGTGATTGCTTGTGACGCCTT";
   
-  r1.open(pathR2, ios::in);
+  r1.open(pathR1, ios::in);
   r2.open(pathR2, ios::in);
   r1_out.open(pathR1_out, ios::out);
   r2_out.open(pathR2_out, ios::out);
