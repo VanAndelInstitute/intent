@@ -1,7 +1,7 @@
 CXX      := -c++
 CXXFLAGS := 
 APP_DIR := ./bin
-LDFLAGS  := -L/usr/lib
+LDFLAGS  := 
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 TARGET   := intent
