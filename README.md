@@ -58,9 +58,9 @@ cp bin/intent /somewhere/on/your/PATH
 
     intent [options] read1.fastq read2.fastq output    
 
-        read1.fastq        read 1 fastq file from a v2 inDrop sequencing run.
-        read2.fastq        read 2 fastq file from a v2 inDrop sequencing run.
-        output             root name of the output; transformed fastqs will be  
+        read1.fastq         read 1 fastq file from a v2 inDrop sequencing run.
+        read2.fastq         read 2 fastq file from a v2 inDrop sequencing run.
+        output              root name of the output; transformed fastqs will be  
                             written to output_R1.fastq and output_R2.fastq. R1 
                             and R2 are swapped, and ambigious reads dropped  
                             (i.e. those with low quality w1 read or poorly formed
@@ -72,10 +72,10 @@ cp bin/intent /somewhere/on/your/PATH
                             dropped low quality barcodes. 
 
         Options:
-            -x               expanded barcodes and umi format (20 / 14) 
-            -t               Chromium v2 barcode format (16 / 10) 
-            -d 2             maximum W1 alignment distance (default = 2)
-            -h               display this help message
+            -x              expanded barcodes and umi format (20 / 14) 
+            -t              Chromium v2 barcode format (16 / 10) 
+            -d 2            maximum W1 alignment distance (default = 2)
+            -h              display this help message
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
