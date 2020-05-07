@@ -114,21 +114,27 @@ int main(int argc, char *argv[]) {
       int cb2Start = end + 1;
       int cb1Start = max(0, start-12);
       cout << "Read: " << endl << lines_r2[1] << endl;
-      cout << start << " " << end << " " << umiStart << endl;
+
       if(umiStart + 6 > lines_r2[1].length()) {
         if(verbose) {
           cout << "Read too short: " << endl << lines_r2[1] << endl;
-          cout << start << " " << end << " " << umiStart << endl;
-        }
+          cout << lines_r2[1].length() << ": " << start << " " << end << 
+            " " << umiStart << 
+            " " << cb2Start << 
+            " " << cb1Start << 
+            endl;    
+        }    
       } else {
         string umi = lines_r2[1].substr(umiStart, 6);
         string umi_q = lines_r2[3].substr(umiStart, 6);
         string cb2 = lines_r2[1].substr(cb2Start, 8);
         string cb2_q = lines_r2[3].substr(cb2Start, 8);
         string cb1 = lines_r2[1].substr(cb1Start, start);
-        cb1.insert(cb1.begin(), 12 - cb1.length(), 'G');
         string cb1_q = lines_r2[3].substr(cb1Start, start);
-        cb1_q.insert(cb1_q.begin(), 12 - cb1_q.length(), 'A');
+        if(cb1.length() < 12) {
+          cb1.insert(cb1.begin(), 12 - cb1.length(), 'G');
+          cb1_q.insert(cb1_q.begin(), 12 - cb1_q.length(), 'A');
+        }
 
         // Augment the UMI with cell barcode. May simplify some
         // workflows since the 6 BP UMI is not complex enough to 
