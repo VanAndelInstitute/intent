@@ -63,6 +63,7 @@ void getEnds(string s1, string s2, vector<int> &res) {
 
 int main(int argc, char *argv[]) {
   int c ;
+  bool verbose = false;
   while( ( c = getopt (argc, argv, "h") ) != -1 ) 
   {
       switch(c)
@@ -70,6 +71,9 @@ int main(int argc, char *argv[]) {
           case 'h':
               usage();
               exit(0);
+          case 'v':
+              verbose = true;
+              break;
       }
   }
 
@@ -109,8 +113,11 @@ int main(int argc, char *argv[]) {
       int umiStart = end + 1 + 8;
       int cb2Start = end + 1;
       int cb1Start = max(0, start-12);
-      if(umiStart + 6 < lines_r2[1].length()) {
-        cout << "Read too short: " << endl << lines_r2[1] << endl;
+      if(umiStart + 6 > lines_r2[1].length()) {
+        if(verbose) {
+          cout << "Read too short: " << endl << lines_r2[1] << endl;
+          cout << start << " " << end << " " << umiStart << endl;
+        }
       } else {
         string umi = lines_r2[1].substr(umiStart, 6);
         string umi_q = lines_r2[3].substr(umiStart, 6);
