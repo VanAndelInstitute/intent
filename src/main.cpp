@@ -113,6 +113,8 @@ int main(int argc, char *argv[]) {
       int umiStart = end + 1 + 8;
       int cb2Start = end + 1;
       int cb1Start = max(0, start-12);
+      cout << "Read: " << endl << lines_r2[1] << endl;
+      cout << start << " " << end << " " << umiStart << endl;
       if(umiStart + 6 > lines_r2[1].length()) {
         if(verbose) {
           cout << "Read too short: " << endl << lines_r2[1] << endl;
