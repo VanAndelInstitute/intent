@@ -109,34 +109,37 @@ int main(int argc, char *argv[]) {
       int umiStart = end + 1 + 8;
       int cb2Start = end + 1;
       int cb1Start = max(0, start-12);
-      string umi = lines_r2[1].substr(umiStart, 6);
-      string umi_q = lines_r2[3].substr(umiStart, 6);
-      string cb2 = lines_r2[1].substr(cb2Start, 8);
-      string cb2_q = lines_r2[3].substr(cb2Start, 8);
-      string cb1 = lines_r2[1].substr(cb1Start, start);
-      cb1.insert(cb1.begin(), 12 - cb1.length(), 'G');
-      string cb1_q = lines_r2[3].substr(cb1Start, start);
-      cb1_q.insert(cb1_q.begin(), 12 - cb1_q.length(), 'A');
+      if(umiStart + 6 < lines_r2[1].length()) {
+        cout << "Read too short: " << endl << lines_r2[1] << endl;
+      } else {
+        string umi = lines_r2[1].substr(umiStart, 6);
+        string umi_q = lines_r2[3].substr(umiStart, 6);
+        string cb2 = lines_r2[1].substr(cb2Start, 8);
+        string cb2_q = lines_r2[3].substr(cb2Start, 8);
+        string cb1 = lines_r2[1].substr(cb1Start, start);
+        cb1.insert(cb1.begin(), 12 - cb1.length(), 'G');
+        string cb1_q = lines_r2[3].substr(cb1Start, start);
+        cb1_q.insert(cb1_q.begin(), 12 - cb1_q.length(), 'A');
 
-      // Augment the UMI with cell barcode. May simplify some
-      // workflows since the 6 BP UMI is not complex enough to 
-      // avoid collisions between cells. I think alevin can 
-      // distinguish UMIs from different cells on its own, but 
-      // while we are here might as well address the issue.
-      umi = umi + cb2;
-      umi_q = umi_q + cb2_q;
-      
-      r1_out << lines_r1[0] << endl;
-      r1_out << lines_r1[1] << endl;
-      r1_out << lines_r1[2] << endl;
-      r1_out << lines_r1[3] << endl;
+        // Augment the UMI with cell barcode. May simplify some
+        // workflows since the 6 BP UMI is not complex enough to 
+        // avoid collisions between cells. I think alevin can 
+        // distinguish UMIs from different cells on its own, but 
+        // while we are here might as well address the issue.
+        umi = umi + cb2;
+        umi_q = umi_q + cb2_q;
+        
+        r1_out << lines_r1[0] << endl;
+        r1_out << lines_r1[1] << endl;
+        r1_out << lines_r1[2] << endl;
+        r1_out << lines_r1[3] << endl;
 
-      r2_out << lines_r2[0] << endl;
-      r2_out << cb1 << cb2 << umi << endl;
-      r2_out << lines_r2[2] << endl;
-      r2_out << cb1_q << cb2_q << umi_q << endl;
+        r2_out << lines_r2[0] << endl;
+        r2_out << cb1 << cb2 << umi << endl;
+        r2_out << lines_r2[2] << endl;
+        r2_out << cb1_q << cb2_q << umi_q << endl;
+      }
     }
-    ii++;
   }
   r1.close();
   r2.close();
