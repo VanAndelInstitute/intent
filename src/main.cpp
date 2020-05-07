@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 
   fstream r1, r2, r1_out, r2_out;
   string w1 = "GAGTGATTGCTTGTGACGCCTT";
-  
+
   r1.open(pathR1, ios::in);
   r2.open(pathR2, ios::in);
   r1_out.open(pathR1_out, ios::out);
@@ -109,14 +109,13 @@ int main(int argc, char *argv[]) {
       int umiStart = end + 1 + 8;
       int cb2Start = end + 1;
       int cb1Start = max(0, start-12);
-
-      string umi = lines_r1[1].substr(umiStart, 6);
-      string umi_q = lines_r1[3].substr(umiStart, 6);
-      string cb2 = lines_r1[1].substr(cb2Start, 8);
-      string cb2_q = lines_r1[3].substr(cb2Start, 8);
-      string cb1 = lines_r1[1].substr(cb1Start, start);
+      string umi = lines_r2[1].substr(umiStart, 6);
+      string umi_q = lines_r2[3].substr(umiStart, 6);
+      string cb2 = lines_r2[1].substr(cb2Start, 8);
+      string cb2_q = lines_r2[3].substr(cb2Start, 8);
+      string cb1 = lines_r2[1].substr(cb1Start, start);
       cb1.insert(cb1.begin(), 12 - cb1.length(), 'G');
-      string cb1_q = lines_r1[3].substr(cb1Start, start);
+      string cb1_q = lines_r2[3].substr(cb1Start, start);
       cb1_q.insert(cb1_q.begin(), 12 - cb1_q.length(), 'A');
 
       // Augment the UMI with cell barcode. May simplify some
@@ -133,7 +132,7 @@ int main(int argc, char *argv[]) {
       r1_out << lines_r1[3] << endl;
 
       r2_out << lines_r2[0] << endl;
-      r2_out << cb1 << " " << cb2 << " " << umi << endl;
+      r2_out << cb1 << cb2 << umi << endl;
       r2_out << lines_r2[2] << endl;
       r2_out << cb1_q << cb2_q << umi_q << endl;
     }
