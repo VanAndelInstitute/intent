@@ -173,16 +173,20 @@ int main(int argc, char *argv[]) {
           umi = cb2.substr(2,6) + umi;
           umi_q = cb2_q.substr(2,6) + umi_q;
         }
+        if((cb.length() + umi.length()) != (cbq.length() + umi_q.length()) {
+          // not clear why this would ever happen
+          bad++;
+        } else {
+          r1_out << lines_r1[0] << endl;
+          r1_out << lines_r1[1] << endl;
+          r1_out << lines_r1[2] << endl;
+          r1_out << lines_r1[3] << endl;
 
-        r1_out << lines_r1[0] << endl;
-        r1_out << lines_r1[1] << endl;
-        r1_out << lines_r1[2] << endl;
-        r1_out << lines_r1[3] << endl;
-
-        r2_out << lines_r2[0] << endl;
-        r2_out << cb << umi << endl;
-        r2_out << lines_r2[2] << endl;
-        r2_out << cbq << umi_q << endl;
+          r2_out << lines_r2[0] << endl;
+          r2_out << cb << umi << endl;
+          r2_out << lines_r2[2] << endl;
+          r2_out << cbq << umi_q << endl;
+        }
       }
     }
   }
