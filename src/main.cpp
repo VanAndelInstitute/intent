@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
           umi = cb2.substr(2,6) + umi;
           umi_q = cb2_q.substr(2,6) + umi_q;
         }
-        if((cb.length() + umi.length()) != (cbq.length() + umi_q.length()) {
+        if((cb.length() + umi.length()) != (cbq.length() + umi_q.length())) {
           // not clear why this would ever happen
           bad++;
         } else {
