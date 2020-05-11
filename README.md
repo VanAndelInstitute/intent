@@ -40,6 +40,7 @@ The output files are as follows (C = cell barcode, U = UMI):
 
         All transcript reads corresponding to high quality barcodes.
 
+Note that all input files must be gzipped, and the program outputs gzipped files.
 
 **CAVEAT EMPTOR** This software is brand spanking new and minimally tested. Please 
 verify results as your mileage may vary.
@@ -58,8 +59,8 @@ cp bin/intent /somewhere/on/your/PATH
 
     intent [options] read1.fastq read2.fastq output    
 
-        read1.fastq         read 1 fastq file from a v2 inDrop sequencing run.
-        read2.fastq         read 2 fastq file from a v2 inDrop sequencing run.
+        read1.fastq.gz      read 1 fastq file (gzipped) from a v2 inDrop sequencing run.
+        read2.fastq.gz      read 2 fastq file (gzipped) from a v2 inDrop sequencing run.
         output              root name of the output; transformed fastqs will be  
                             written to output_R1.fastq and output_R2.fastq. R1 
                             and R2 are swapped, and ambigious reads dropped  

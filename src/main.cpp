@@ -4,16 +4,15 @@
 #include <vector>
 #include <getopt.h>
 #include "edlib.h"
-
+#include "zstr.hpp"
 
 using namespace std;
 
-
 void usage()
 {
-  cout << endl << "Usage: intent [options] read1.fastq read2.fastq output" << endl <<
-      "  read1.fastq        read 1 fastq file from a v2 inDrop sequencing run." << endl <<
-      "  read2.fastq        read 2 fastq file from a v2 inDrop sequencing run." << endl <<
+  cout << endl << "Usage: intent [options] read1.fastq.gz read2.fastq.gz output" << endl <<
+      "  read1.fastq.gz     read 1 fastq file (gzipped) from a v2 inDrop sequencing run." << endl <<
+      "  read2.fastq.gz     read 2 fastq file (gzipped) from a v2 inDrop sequencing run." << endl <<
       "  output             root name of the output; transformed fastqs will be  "  << endl <<
       "                     written to output_R1.fastq and output_R2.fastq. R1 "  << endl <<
       "                     and R2 are swapped, and ambigious reads dropped  "  << endl <<
@@ -31,7 +30,7 @@ void usage()
       "    -h               Print this help" << endl << endl;
 }
 
-vector<string> readFour(fstream &f)
+vector<string> readFour(zstr::istream &f)
 {
   vector<string> lines;
   string line;
@@ -45,7 +44,6 @@ vector<string> readFour(fstream &f)
   }
   return lines;
 }
-
 
 void getEnds(string s1, string s2, vector<int> &res) {
   EdlibAlignResult result = edlibAlign(s1.c_str(), 
@@ -110,17 +108,24 @@ int main(int argc, char *argv[]) {
   string output = argv[optind + 2];  
 
   // note R1 and R2 are swapped to mimic 10X libraries
-  string pathR1_out = output + "_intent_R2.fastq";
-  string pathR2_out = output + "_intent_R1.fastq";
+  string pathR1_out = output + "_intent_R2.fastq.gz";
+  string pathR2_out = output + "_intent_R1.fastq.gz";
 
-  fstream r1, r2, r1_out, r2_out;
+  fstream r1_fs, r2_fs, r1_out_fs, r2_out_fs;
   string w1 = "GAGTGATTGCTTGTGACGCCTT";
 
-  r1.open(pathR1, ios::in);
-  r2.open(pathR2, ios::in);
-  r1_out.open(pathR1_out, ios::out);
-  r2_out.open(pathR2_out, ios::out);
-  int in = 0, ok = 0, bad = 0, shortread = 0;
+  r1_fs.open(pathR1, ios::in);
+  r2_fs.open(pathR2, ios::in);
+  r1_out_fs.open(pathR1_out, ios::out);
+  r2_out_fs.open(pathR2_out, ios::out);
+
+  zstr::istream r1(r1_fs),
+                r2(r2_fs);
+
+  zstr::ostream r1_out(r1_out_fs),
+                r2_out(r2_out_fs);
+
+  int in = 0, ok = 0, bad = 0, quallen = 0, shortread = 0;
 
   while(r2.peek() != EOF ) {
     in++;
@@ -129,7 +134,6 @@ int main(int argc, char *argv[]) {
     lines_r1 = readFour(r1);
     lines_r2 = readFour(r2);
     getEnds(w1, lines_r2[1], coords);
-
 
     // reject read if w1 alignment distance > 1
     if(coords[0] > distance) {
@@ -150,7 +154,7 @@ int main(int argc, char *argv[]) {
         string cb2 = lines_r2[1].substr(cb2Start, 8);
         string cb2_q = lines_r2[3].substr(cb2Start, 8);
         string cb1 = lines_r2[1].substr(cb1Start, min(start, 12));
-        string cb1_q = lines_r2[3].substr(cb1Start, start);
+        string cb1_q = lines_r2[3].substr(cb1Start,min(start, 12));
         string cb, cbq;
 
         if(expanded) { // 20, 14
@@ -174,8 +178,9 @@ int main(int argc, char *argv[]) {
           umi_q = cb2_q.substr(2,6) + umi_q;
         }
         if((cb.length() + umi.length()) != (cbq.length() + umi_q.length())) {
-          // not clear why this would ever happen
-          bad++;
+          // this should never happen now that bug squashed.
+          // if it does, should investigate further.
+          quallen++;
         } else {
           r1_out << lines_r1[0] << endl;
           r1_out << lines_r1[1] << endl;
@@ -190,14 +195,17 @@ int main(int argc, char *argv[]) {
       }
     }
   }
-  r1.close();
-  r2.close();
-  r1_out.close();
-  r2_out.close();
+  r1_fs.close();
+  r2_fs.close();
+  r1_out_fs.close();
+  r2_out_fs.close();
   cout << "Complete. Job summary: " << endl <<
         "Reads: " << in << endl <<
         "OK: " << ok << endl <<
-        "Poor W1 alignment: " << bad << endl <<
+        "Poor W1 alignment: " << bad << endl << 
         "Barcode or UMI too short: " << shortread << endl << endl;
+  if(quallen > 0) {
+        cout << "Quality string length mismatch (!!): " << quallen << endl;
+  }
   return(0);
 }

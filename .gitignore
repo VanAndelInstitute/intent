@@ -2,3 +2,4 @@
 *.fastq
 .vscode
 bin/*
+test/*
