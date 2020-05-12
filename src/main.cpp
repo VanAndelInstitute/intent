@@ -20,10 +20,10 @@ void usage()
       "  output             root name of the output; transformed fastqs will be  "  << std::endl <<
       "                     written to output_R1.fastq and output_R2.fastq. R1 "  << std::endl <<
       "                     and R2 are swapped, and ambigious reads dropped  "  << std::endl <<
-      "                     (i.e. those with low quality w1 read or poorly formed" << std::endl << 
-      "                     barcodes or UMIs); the resulting R1 fastq will have 16" << std::endl << 
-      "                     bases of cell barcode follwed by 12 of UMI (unless" << std::endl <<  
-      "                      -x or -t flags are specified); the R2 fastq will"  << std::endl <<  
+      "                     (i.e. those with low quality w1 read or poorly formed" << std::endl <<
+      "                     barcodes or UMIs); the resulting R1 fastq will have 16" << std::endl <<
+      "                     bases of cell barcode follwed by 12 of UMI (unless" << std::endl <<
+      "                      -x or -t flags are specified); the R2 fastq will"  << std::endl <<
       "                     contain the corresponding transcript reads from the " << std::endl <<
       "                     original R1 fastq (excluding those corresponding to " << std::endl <<
       "                     dropped low quality barcodes. " << std::endl << std::endl <<
@@ -50,31 +50,33 @@ std::vector<std::string> readFour(zstr::istream &f)
 }
 
 int getDist(std::string s1, std::string s2) {
-  EdlibAlignResult result = edlibAlign(s1.c_str(), 
-                                       s1.length(), 
-                                       s2.c_str(), 
+  EdlibAlignResult result = edlibAlign(s1.c_str(),
+                                       s1.length(),
+                                       s2.c_str(),
                                        s2.length(),
-                                       edlibNewAlignConfig(-1, 
-                                                           EDLIB_MODE_HW, 
-                                                           EDLIB_TASK_DISTANCE, 
-                                                           NULL, 
+                                       edlibNewAlignConfig(-1,
+                                                           EDLIB_MODE_HW,
+                                                           EDLIB_TASK_DISTANCE,
+                                                           NULL,
                                                            0));
   if (result.status == EDLIB_STATUS_OK) {
-    return(result.editDistance);
+      int dist = result.editDistance;
+      edlibFreeAlignResult(result);
+      return(dist);
   } else {
     return(999);
   }
 }
 
 void getEnds(std::string s1, std::string s2, std::vector<int> &res) {
-  EdlibAlignResult result = edlibAlign(s1.c_str(), 
-                                       s1.length(), 
-                                       s2.c_str(), 
+  EdlibAlignResult result = edlibAlign(s1.c_str(),
+                                       s1.length(),
+                                       s2.c_str(),
                                        s2.length(),
-                                       edlibNewAlignConfig(-1, 
-                                                           EDLIB_MODE_HW, 
-                                                           EDLIB_TASK_PATH, 
-                                                           NULL, 
+                                       edlibNewAlignConfig(-1,
+                                                           EDLIB_MODE_HW,
+                                                           EDLIB_TASK_PATH,
+                                                           NULL,
                                                            0));
   if (result.status == EDLIB_STATUS_OK) {
     res.push_back(result.editDistance);
@@ -85,6 +87,7 @@ void getEnds(std::string s1, std::string s2, std::vector<int> &res) {
     res.push_back(-1);
     res.push_back(-1);
   }
+    edlibFreeAlignResult(result);
   return;
 }
 
@@ -116,7 +119,7 @@ int main(int argc, char *argv[]) {
   std::set<std::string>::iterator it_bc1;
   std::set<std::string>::iterator it_bc2;
 
-  while( ( c = getopt (argc, argv, "xthvd:") ) != -1 ) 
+  while( ( c = getopt (argc, argv, "xthvd:") ) != -1 )
   {
       switch(c)
       {
@@ -153,7 +156,7 @@ int main(int argc, char *argv[]) {
 
   std::string pathR1 = argv[optind];
   std::string pathR2 = argv[optind + 1];
-  std::string output = argv[optind + 2];  
+  std::string output = argv[optind + 2];
 
   // note R1 and R2 are swapped to mimic 10X libraries
   std::string pathR1_out = output + "_intent_R2.fastq.gz";
@@ -177,7 +180,7 @@ int main(int argc, char *argv[]) {
 
   while(r2.peek() != EOF ) {
     in++;
-    std::vector<std::string> lines_r1, lines_r2;  
+    std::vector<std::string> lines_r1, lines_r2;
     std::vector<int> coords;
     lines_r1 = readFour(r1);
     lines_r2 = readFour(r2);
@@ -193,7 +196,7 @@ int main(int argc, char *argv[]) {
       int cb2Start = end + 1;
       int cb1Start = std::max(0, start-11);
 
-      // make sure we have at least 8 bp (BC1) ahead of W1 and 14 (BC2 + CB) after 
+      // make sure we have at least 8 bp (BC1) ahead of W1 and 14 (BC2 + CB) after
       if(umiStart + 6 >= lines_r2[1].length() || start < 8) {
         shortread++;
       } else {
@@ -226,7 +229,7 @@ int main(int argc, char *argv[]) {
               corrected++;
             }
             bc1_ok = true;
-          }          
+          }
         }
         if(! bc2_ok) {
           std::string newbc =  corrected_bc(cb2, V2_BC2);
@@ -242,13 +245,13 @@ int main(int argc, char *argv[]) {
               corrected++;
             }
             bc2_ok = true;
-          }     
+          }
         }
         if(!(bc1_ok && bc2_ok)) {
           nf++;
         } else {
-        // reformat to requested format; note that due to the way the 
-        // V2 barcodes are designed, they will still be unambiguous 
+        // reformat to requested format; note that due to the way the
+        // V2 barcodes are designed, they will still be unambiguous
         // even after expanding / trimming below (!).
           if(expanded) { // 20, 14
             umi = cb2 + umi;
@@ -274,7 +277,7 @@ int main(int argc, char *argv[]) {
             // this should never happen now that bug squashed.
             // if it does, should investigate further.
             quallen++;
-          } else {        
+          } else {
             ok++;
             r1_out << lines_r1[0] << std::endl;
             r1_out << lines_r1[1] << std::endl;
@@ -297,9 +300,9 @@ int main(int argc, char *argv[]) {
   std::cout << "Complete. Job summary: " << std::endl <<
         "Reads: " << in <<std:: endl <<
         "OK: " << ok << std::endl <<
-        "Poor W1 alignment: " << bad << std::endl << 
-        "Barcode or UMI too short: " << shortread <<std::endl << 
-        "Barcode succesfully corrected: " << corrected << std::endl << 
+        "Poor W1 alignment: " << bad << std::endl <<
+        "Barcode or UMI too short: " << shortread <<std::endl <<
+        "Barcode succesfully corrected: " << corrected << std::endl <<
         "Barcode not recognized: " << nf << std::endl;
   if(quallen > 0) {
         std::cout << "Quality string length mismatch (!!): " << quallen << std::endl;
