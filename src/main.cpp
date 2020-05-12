@@ -10,7 +10,7 @@
 #include "bc2.h"
 
 
-std::string VERSION = "0.2.1";
+std::string VERSION = "0.2.2";
 
 void usage()
 {
