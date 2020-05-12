@@ -9,34 +9,35 @@
 #include "bc1.h"
 #include "bc2.h"
 
-using namespace std;
+
+std::string VERSION = "0.2.1";
 
 void usage()
 {
-  cout << endl << "Usage: intent [options] read1.fastq.gz read2.fastq.gz output" << endl <<
-      "  read1.fastq.gz     read 1 fastq file (gzipped) from a v2 inDrop sequencing run." << endl <<
-      "  read2.fastq.gz     read 2 fastq file (gzipped) from a v2 inDrop sequencing run." << endl <<
-      "  output             root name of the output; transformed fastqs will be  "  << endl <<
-      "                     written to output_R1.fastq and output_R2.fastq. R1 "  << endl <<
-      "                     and R2 are swapped, and ambigious reads dropped  "  << endl <<
-      "                     (i.e. those with low quality w1 read or poorly formed" << endl << 
-      "                     barcodes or UMIs); the resulting R1 fastq will have 16" << endl << 
-      "                     bases of cell barcode follwed by 12 of UMI (unless" << endl <<  
-      "                      -x or -t flags are specified); the R2 fastq will"  << endl <<  
-      "                     contain the corresponding transcript reads from the " << endl <<
-      "                     original R1 fastq (excluding those corresponding to " << endl <<
-      "                     dropped low quality barcodes. " << endl << endl <<
-      "  Options:" << endl <<
-      "    -x               expanded barcodes and umi format (20 / 14) " << endl <<
-      "    -t               Chromium v2 barcode format (16 / 10) " << endl <<
-      "    -d 2             Maximum W1 alignment distance (default = 2)" << endl <<
-      "    -h               Print this help" << endl << endl;
+  std::cout << std::endl << "Usage: intent [options] read1.fastq.gz read2.fastq.gz output" << std::endl <<
+      "  read1.fastq.gz     read 1 fastq file (gzipped) from a v2 inDrop sequencing run." << std::endl <<
+      "  read2.fastq.gz     read 2 fastq file (gzipped) from a v2 inDrop sequencing run." << std::endl <<
+      "  output             root name of the output; transformed fastqs will be  "  << std::endl <<
+      "                     written to output_R1.fastq and output_R2.fastq. R1 "  << std::endl <<
+      "                     and R2 are swapped, and ambigious reads dropped  "  << std::endl <<
+      "                     (i.e. those with low quality w1 read or poorly formed" << std::endl << 
+      "                     barcodes or UMIs); the resulting R1 fastq will have 16" << std::endl << 
+      "                     bases of cell barcode follwed by 12 of UMI (unless" << std::endl <<  
+      "                      -x or -t flags are specified); the R2 fastq will"  << std::endl <<  
+      "                     contain the corresponding transcript reads from the " << std::endl <<
+      "                     original R1 fastq (excluding those corresponding to " << std::endl <<
+      "                     dropped low quality barcodes. " << std::endl << std::endl <<
+      "  Options:" << std::endl <<
+      "    -x               expanded barcodes and umi format (20 / 14) " << std::endl <<
+      "    -t               Chromium v2 barcode format (16 / 10) " << std::endl <<
+      "    -d 2             Maximum W1 alignment distance (default = 2)" << std::endl <<
+      "    -h               Print this help" << std::endl << std::endl;
 }
 
-vector<string> readFour(zstr::istream &f)
+std::vector<std::string> readFour(zstr::istream &f)
 {
-  vector<string> lines;
-  string line;
+  std::vector<std::string> lines;
+  std::string line;
   for(int i = 0; i < 4; i++) {
     if(f.peek() != EOF ) {
       getline(f, line);
@@ -48,7 +49,7 @@ vector<string> readFour(zstr::istream &f)
   return lines;
 }
 
-int getDist(string s1, string s2) {
+int getDist(std::string s1, std::string s2) {
   EdlibAlignResult result = edlibAlign(s1.c_str(), 
                                        s1.length(), 
                                        s2.c_str(), 
@@ -65,7 +66,7 @@ int getDist(string s1, string s2) {
   }
 }
 
-void getEnds(string s1, string s2, vector<int> &res) {
+void getEnds(std::string s1, std::string s2, std::vector<int> &res) {
   EdlibAlignResult result = edlibAlign(s1.c_str(), 
                                        s1.length(), 
                                        s2.c_str(), 
@@ -112,15 +113,18 @@ int main(int argc, char *argv[]) {
   int c, distance = 2 ;
   bool expanded = false;
   bool v2 = false;
-  set<string>::iterator it_bc1;
-  set<string>::iterator it_bc2;
+  std::set<std::string>::iterator it_bc1;
+  std::set<std::string>::iterator it_bc2;
 
-  while( ( c = getopt (argc, argv, "xthd:") ) != -1 ) 
+  while( ( c = getopt (argc, argv, "xthvd:") ) != -1 ) 
   {
       switch(c)
       {
           case 'h':
               usage();
+              exit(0);
+          case 'v':
+              std::cout << "\n  intent version " << VERSION << "\n\n";
               exit(0);
           case 'x':
               expanded = true;
@@ -129,7 +133,7 @@ int main(int argc, char *argv[]) {
               if(optarg) {
                 distance = std::atoi(optarg);
               } else {
-                cout << "The -d flag requires a value.\n\n";
+                std::cout << "The -d flag requires a value.\n\n";
               }
               break;
           case 't':
@@ -139,7 +143,7 @@ int main(int argc, char *argv[]) {
   }
 
   if(expanded && v2) {
-    cout << "The -x and -t flags are mutually exclusive. Please select only 1.\n\n";
+    std::cout << "The -x and -t flags are mutually exclusive. Please select only 1.\n\n";
   }
 
   if (argv[optind] == NULL || argv[optind + 1]  == NULL || argv[optind + 2] == NULL) {
@@ -147,21 +151,21 @@ int main(int argc, char *argv[]) {
     exit(0);
   }
 
-  string pathR1 = argv[optind];
-  string pathR2 = argv[optind + 1];
-  string output = argv[optind + 2];  
+  std::string pathR1 = argv[optind];
+  std::string pathR2 = argv[optind + 1];
+  std::string output = argv[optind + 2];  
 
   // note R1 and R2 are swapped to mimic 10X libraries
-  string pathR1_out = output + "_intent_R2.fastq.gz";
-  string pathR2_out = output + "_intent_R1.fastq.gz";
+  std::string pathR1_out = output + "_intent_R2.fastq.gz";
+  std::string pathR2_out = output + "_intent_R1.fastq.gz";
 
-  fstream r1_fs, r2_fs, r1_out_fs, r2_out_fs;
-  string w1 = "GAGTGATTGCTTGTGACGCCTT";
+  std::fstream r1_fs, r2_fs, r1_out_fs, r2_out_fs;
+  std::string w1 = "GAGTGATTGCTTGTGACGCCTT";
 
-  r1_fs.open(pathR1, ios::in);
-  r2_fs.open(pathR2, ios::in);
-  r1_out_fs.open(pathR1_out, ios::out);
-  r2_out_fs.open(pathR2_out, ios::out);
+  r1_fs.open(pathR1, std::ios::in);
+  r2_fs.open(pathR2, std::ios::in);
+  r1_out_fs.open(pathR1_out, std::ios::out);
+  r2_out_fs.open(pathR2_out, std::ios::out);
 
   zstr::istream r1(r1_fs),
                 r2(r2_fs);
@@ -173,8 +177,8 @@ int main(int argc, char *argv[]) {
 
   while(r2.peek() != EOF ) {
     in++;
-    vector<string> lines_r1, lines_r2;  
-    vector<int> coords;
+    std::vector<std::string> lines_r1, lines_r2;  
+    std::vector<int> coords;
     lines_r1 = readFour(r1);
     lines_r2 = readFour(r2);
     getEnds(w1, lines_r2[1], coords);
@@ -187,19 +191,19 @@ int main(int argc, char *argv[]) {
       int end = coords[2];
       int umiStart = end + 1 + 8;
       int cb2Start = end + 1;
-      int cb1Start = max(0, start-11);
+      int cb1Start = std::max(0, start-11);
 
       // make sure we have at least 8 bp (BC1) ahead of W1 and 14 (BC2 + CB) after 
       if(umiStart + 6 >= lines_r2[1].length() || start < 8) {
         shortread++;
       } else {
-        string umi = lines_r2[1].substr(umiStart, 6);
-        string umi_q = lines_r2[3].substr(umiStart, 6);
-        string cb2 = lines_r2[1].substr(cb2Start, 8);
-        string cb2_q = lines_r2[3].substr(cb2Start, 8);
-        string cb1 = lines_r2[1].substr(cb1Start, min(start, 11));
-        string cb1_q = lines_r2[3].substr(cb1Start, min(start, 11));
-        string cb, cbq;
+        std::string umi = lines_r2[1].substr(umiStart, 6);
+        std::string umi_q = lines_r2[3].substr(umiStart, 6);
+        std::string cb2 = lines_r2[1].substr(cb2Start, 8);
+        std::string cb2_q = lines_r2[3].substr(cb2Start, 8);
+        std::string cb1 = lines_r2[1].substr(cb1Start, std::min(start, 11));
+        std::string cb1_q = lines_r2[3].substr(cb1Start, std::min(start, 11));
+        std::string cb, cbq;
 
         it_bc1 = V2_BC1.find(cb1);
         it_bc2 = V2_BC2.find(cb2);
@@ -272,15 +276,15 @@ int main(int argc, char *argv[]) {
             quallen++;
           } else {        
             ok++;
-            r1_out << lines_r1[0] << endl;
-            r1_out << lines_r1[1] << endl;
-            r1_out << lines_r1[2] << endl;
-            r1_out << lines_r1[3] << endl;
+            r1_out << lines_r1[0] << std::endl;
+            r1_out << lines_r1[1] << std::endl;
+            r1_out << lines_r1[2] << std::endl;
+            r1_out << lines_r1[3] << std::endl;
 
-            r2_out << lines_r2[0] << endl;
-            r2_out << cb << umi << endl;
-            r2_out << lines_r2[2] << endl;
-            r2_out << cbq << umi_q << endl;
+            r2_out << lines_r2[0] << std::endl;
+            r2_out << cb << umi << std::endl;
+            r2_out << lines_r2[2] << std::endl;
+            r2_out << cbq << umi_q << std::endl;
           }
         }
       }
@@ -290,16 +294,16 @@ int main(int argc, char *argv[]) {
   r2_fs.close();
   r1_out_fs.close();
   r2_out_fs.close();
-  cout << "Complete. Job summary: " << endl <<
-        "Reads: " << in << endl <<
-        "OK: " << ok << endl <<
-        "Poor W1 alignment: " << bad << endl << 
-        "Barcode or UMI too short: " << shortread << endl << 
-        "Barcode succesfully corrected: " << corrected << endl << 
-        "Barcode not recognized: " << nf << endl;
+  std::cout << "Complete. Job summary: " << std::endl <<
+        "Reads: " << in <<std:: endl <<
+        "OK: " << ok << std::endl <<
+        "Poor W1 alignment: " << bad << std::endl << 
+        "Barcode or UMI too short: " << shortread <<std::endl << 
+        "Barcode succesfully corrected: " << corrected << std::endl << 
+        "Barcode not recognized: " << nf << std::endl;
   if(quallen > 0) {
-        cout << "Quality string length mismatch (!!): " << quallen << endl;
+        std::cout << "Quality string length mismatch (!!): " << quallen << std::endl;
   }
-  cout << endl;
+  std::cout << std::endl;
   return(0);
 }

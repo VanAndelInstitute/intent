@@ -16,10 +16,18 @@ in some cases will require padding with up to 4 G's since BC1 can be anywhere be
 and 12 bp).
 
 If barcode 1 is shorter than 8 bp or if the UMI is shorter than 6bp, the barcode (and 
-corresponding transcript read) is discarded. If barcode 1 os 8-11 basepairs, it is padded
+corresponding transcript read) is discarded. If barcode 1 is 8-11 basepairs, it is padded
 to 12 basepairs with G's. If the W1 portion of R2 aligns poorly to the expected W1 sequence 
 (`GAGTGATTGCTTGTGACGCCTT`), then the barcode is discarded. "Poorly" is defined as exceeding 
 the Levenshtein distance limit set by the parameter `-d`, which by default is set to '2'.
+
+Note that barcode 1 and barcode 2 are compared to the official V2 barcode list provided 
+with the indrop pipeline (prior to any padding). If there is no match, then the barcode 
+is corrected if possible if there is a unique barcode within a Levenshtein distance of 1 
+of the read barcode.
+
+Due to the way that the barcodes are designed, the padding and truncation performed 
+should in fact not introduce any ambiguity to the barcodes. 
 
 The quality metrics for the reads are preserved and re-ordered along with the barcodes.
 
@@ -73,6 +81,7 @@ cp bin/intent /somewhere/on/your/PATH
                             dropped low quality barcodes. 
 
         Options:
+            -v              report the version and exit.
             -x              expanded barcodes and umi format (20 / 14) 
             -t              Chromium v2 barcode format (16 / 10) 
             -d 2            maximum W1 alignment distance (default = 2)
