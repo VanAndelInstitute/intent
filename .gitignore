@@ -1,6 +1,5 @@
 *.o
 *.fastq
 *.fastq.gz
-.vscode
 bin/*
 test/*

@@ -1,3 +1,6 @@
+#ifndef BC1_H
+#define BC1_H
+
 #include <set>
 
 static std::set<std::string> V2_BC1 {
@@ -386,3 +389,5 @@ static std::set<std::string> V2_BC1 {
     "GAGTTAACCA", 
     "TGATGATAACA"
 };
+
+#endif // BC1_H

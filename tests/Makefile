@@ -1,17 +1,16 @@
-CXX      := -c++ -std=c++17
-CXXFLAGS := 
-APP_DIR := ./bin
-LDFLAGS  := -lz
+CXX      := c++
+CXXFLAGS := -std=c++17 -lz
+APP_DIR := ./
+LDFLAGS  := 
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
-TARGET   := intent
-INCLUDE  := -Iinclude
-SRC      := main.cpp \
-   $(wildcard src/*.cpp) 
-
+TARGET   := intent_tests
+INCLUDE  := -I../include/
+SRC      := $(wildcard ../src/*.cpp) \
+			$(wildcard ./*.cpp) 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
-all: build $(APP_DIR)/$(TARGET)
+all: build $(APP_DIR)/$(TARGET) run
 
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
@@ -30,3 +29,6 @@ debug: all
 
 clean:
 	-@rm -rvf $(OBJ_DIR)/*
+
+run:
+	./intent_tests --verbose

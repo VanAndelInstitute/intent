@@ -1,0 +1,46 @@
+{
+	"tasks": [
+		{
+			"command": "make",
+			"type": "shell",
+			"group": "build",
+			"label": "GNU make all",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"args": [
+				"all"
+			]
+		},
+		{
+			"command": "make",
+			"type": "shell",
+			"group": "build",
+			"label": "GNU make clean",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"args": [
+				"clean"
+			]
+		},
+		{
+			"command": "make",
+			"type": "shell",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "GNU make test",
+			"options": {
+				"cwd": "${workspaceFolder}/tests"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"args": [
+				"all"
+			]
+		}
+	]
+}
