@@ -52,6 +52,7 @@ void init_stats_table() {
 
 void update_stats(int a, int b, int c, int d, int e) {
   printf("|%11d|%11d|%11d|%11d|%11d|\r", a, b, c, d, e);
+  fflush(stdout);
 }
 
 int main(int argc, char *argv[]) {
@@ -125,7 +126,7 @@ int main(int argc, char *argv[]) {
 
   while(r2.peek() != EOF ) {
     in++;
-    if((in % 10000) == 0)
+    if((in % 1000) == 0)
        update_stats(ok, bad_w1, shortread, corrected, bad_barcode);
 
     std::vector<std::string> lines_r1, lines_r2;
