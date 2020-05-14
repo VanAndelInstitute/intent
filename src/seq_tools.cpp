@@ -209,7 +209,11 @@ FastqRead format_barcode(ParsedBarcode bc,
   return(read);
 }
 
-// optimized by aborting if row minimum greater than max distance
+// for barcode correction we don't need the positions, just the distance
+// score; this has been further optimized by aborting if row minimum greater 
+// than max distance; for this task this is twice as fast as edlib.
+//
+// Original code by Martin Ettl, 2012-10-05 via Rosetta Code
 int levenshteinDistance(const std::string &s1, const std::string &s2, size_t max)
 {
   const size_t m(s1.size());
@@ -246,7 +250,8 @@ int levenshteinDistance(const std::string &s1, const std::string &s2, size_t max
       corner = upper;
     }
     if(min > max) {
-        return(max);
+        delete [] costs;
+        return(static_cast<int>(max));
     }
 
   }
