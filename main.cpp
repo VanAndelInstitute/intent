@@ -47,14 +47,14 @@ std::string reformatFileName(std::string n, std::string suff) {
 }
 
 void init_stats_table() {
-  std::cout << "| OK        | Poor W1   | Too Short | Corrected |Bad Barcode|\n";
-  std::cout << "|-----------|-----------|-----------|-----------|-----------|\n";
+  std::cout << "\n\n| Total     | OK        | Poor W1   | Too Short | Corrected |Bad Barcode|\n";
+  std::cout <<      "|-----------|-----------|-----------|-----------|-----------|-----------|\n";
 }
 
-void update_stats(std::chrono::steady_clock::time_point start, int a, int b, int c, int d, int e) {
+void update_stats(std::chrono::steady_clock::time_point start, int a, int b, int c, int d, int e, int f) {
   auto now = std::chrono::steady_clock::now();
   int secs = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
-  printf("|%11d|%11d|%11d|%11d|%11d| (in %d secs)\r", a, b, c, d, e, secs);
+  printf("|%11d|%11d|%11d|%11d|%11d| (in %d secs)\r", a, b, c, d, e, f, secs);
   fflush(stdout);
 }
 
@@ -130,8 +130,8 @@ int main(int argc, char *argv[]) {
 
   while(r2.peek() != EOF ) {
     in++;
-    if((in % 1000) == 0)
-       update_stats(start_time, ok, bad_w1, shortread, corrected, bad_barcode);
+    if((in % 10000) == 0)
+       update_stats(start_time, in, ok, bad_w1, shortread, corrected, bad_barcode);
 
     std::vector<std::string> lines_r1, lines_r2;
     std::vector<int> coords;
