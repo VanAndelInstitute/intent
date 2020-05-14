@@ -54,7 +54,7 @@ void init_stats_table() {
 void update_stats(std::chrono::steady_clock::time_point start, int a, int b, int c, int d, int e, int f) {
   auto now = std::chrono::steady_clock::now();
   int secs = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
-  printf("|%11d|%11d|%11d|%11d|%11d| (in %d secs)\r", a, b, c, d, e, f, secs);
+  printf("|%11d|%11d|%11d|%11d|%11d|%11d| (in %d secs)\r", a, b, c, d, e, f, secs);
   fflush(stdout);
 }
 
