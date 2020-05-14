@@ -1,5 +1,5 @@
 CXX      := c++
-CXXFLAGS := -std=c++17 -lz
+CXXFLAGS := -std=c++17 -lz -g -O3
 APP_DIR := ./
 LDFLAGS  := 
 BUILD    := ./build

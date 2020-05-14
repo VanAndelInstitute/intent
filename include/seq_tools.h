@@ -42,7 +42,9 @@ struct FastqRead {
     std::string quality = "";
 };
 
-int getDist(std::string s1, std::string s2);
+int getDist(std::string s1, 
+            std::string s2, 
+            int method = EDLIB_MODE_HW);
 
 std::vector<int> getEnds(std::string s1, 
                          std::string s2);
@@ -68,5 +70,6 @@ FastqRead format_barcode(ParsedBarcode bc,
                          int format);
 
 
+int levenshteinDistance(const std::string &s1, const std::string &s2, size_t max = 3);
 
 #endif // SEQTOOLS_H

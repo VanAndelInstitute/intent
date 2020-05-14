@@ -1,7 +1,7 @@
 #include "seq_tools.h"
 
 // get Levenshtein distance of best match of s1 in s2
-int getDist(std::string s1, std::string s2) {
+int getDist(std::string s1, std::string s2, int method) {
   EdlibAlignResult result = edlibAlign(s1.c_str(),
                                        s1.length(),
                                        s2.c_str(),
@@ -117,7 +117,7 @@ ParsedBarcode extract_v2_barcodes(std::string read,
 // barcode near it ("near" in Levenshtein distance sense)
 void fix_barcodes(ParsedBarcode &bc) {
     if(! v2_bc1_whitelisted(bc.barcode1)){
-        bc.barcode1 = v2_corrected_bc(bc.barcode1, V2_BC1);
+        bc.barcode1 = v2_corrected_bc(bc.barcode1, V2_BC1, 2);
         if(bc.barcode1 == "") {
             bc.status = BC_ERROR_BAD_BARCODE;
         } else {
@@ -125,7 +125,7 @@ void fix_barcodes(ParsedBarcode &bc) {
         }
     }
     if(! v2_bc2_whitelisted(bc.barcode2)){
-        bc.barcode2 = v2_corrected_bc(bc.barcode2, V2_BC2);
+        bc.barcode2 = v2_corrected_bc(bc.barcode2, V2_BC2, 2);
         if(bc.barcode2 == "") {
             bc.status = BC_ERROR_BAD_BARCODE;
         } else {
@@ -143,7 +143,9 @@ std::string v2_corrected_bc(std::string bc, std::set<std::string> whitelist, int
   std::string best_candidate = "";
   bool ambig = false;
   for(auto cand : whitelist) {
-    int dist = getDist(bc, cand);
+    int dist = 999;
+    if(((bc.length() - cand.length())^2) < 4)
+      dist = levenshteinDistance(bc, cand, maxdist);
     if(dist < mindist) {
       mindist = dist;
       best_candidate = cand;
@@ -205,4 +207,51 @@ FastqRead format_barcode(ParsedBarcode bc,
     exit(0);
   }
   return(read);
+}
+
+// optimized by aborting if row minimum greater than max distance
+int levenshteinDistance(const std::string &s1, const std::string &s2, size_t max)
+{
+  const size_t m(s1.size());
+  const size_t n(s2.size());
+ 
+  if( m==0 ) return n;
+  if( n==0 ) return m;
+ 
+  size_t *costs = new size_t[n + 1];
+ 
+  for( size_t k=0; k<=n; k++ ) costs[k] = k;
+ 
+  size_t i = 0;
+  for ( std::string::const_iterator it1 = s1.begin(); it1 != s1.end(); ++it1, ++i )
+  {
+    costs[0] = i+1;
+    size_t corner = i;
+ 
+    size_t j = 0;
+    size_t min = 999;
+    for ( std::string::const_iterator it2 = s2.begin(); it2 != s2.end(); ++it2, ++j )
+    {
+      size_t upper = costs[j+1];
+      if( *it1 == *it2 )
+      {
+		  costs[j+1] = corner;
+	  }
+      else
+	  {
+		size_t t(upper<corner?upper:corner);
+        costs[j+1] = (costs[j]<t?costs[j]:t)+1;
+	  }
+      min = std::min(min, costs[j+1]); 
+      corner = upper;
+    }
+    if(min > max) {
+        return(max);
+    }
+
+  }
+  size_t result = costs[n];
+  delete [] costs;
+ 
+  return(static_cast<int>(result));
 }
