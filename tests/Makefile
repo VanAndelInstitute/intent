@@ -1,5 +1,5 @@
 CXX      := c++
-CXXFLAGS := -std=c++17 -lz -g -O3
+CXXFLAGS := -std=c++17 -lz
 APP_DIR := ./
 LDFLAGS  := 
 BUILD    := ./build
@@ -32,3 +32,4 @@ clean:
 
 run:
 	./intent_tests --verbose
+

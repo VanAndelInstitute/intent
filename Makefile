@@ -30,3 +30,7 @@ debug: all
 
 clean:
 	-@rm -rvf $(OBJ_DIR)/*
+
+install:
+	cp $(APP_DIR)/$(TARGET) /usr/local/bin
+
