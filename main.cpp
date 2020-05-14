@@ -5,6 +5,7 @@
 #include <getopt.h>
 #include <set>
 #include <regex>
+#include <chrono>
 #include "edlib.h"
 #include "zstr.hpp"
 #include "seq_tools.h"
@@ -50,8 +51,10 @@ void init_stats_table() {
   std::cout << "|-----------|-----------|-----------|-----------|-----------|\n";
 }
 
-void update_stats(int a, int b, int c, int d, int e) {
-  printf("|%11d|%11d|%11d|%11d|%11d|\r", a, b, c, d, e);
+void update_stats(std::chrono::steady_clock::time_point start, int a, int b, int c, int d, int e) {
+  auto now = std::chrono::steady_clock::now();
+  int secs = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
+  printf("|%11d|%11d|%11d|%11d|%11d| (in %d secs)\r", a, b, c, d, e, secs);
   fflush(stdout);
 }
 
@@ -103,6 +106,7 @@ int main(int argc, char *argv[]) {
   std::string pathR1 = argv[optind];
   std::string pathR2 = argv[optind + 1];
   std::string pathR1_out, pathR2_out;
+  auto start_time = std::chrono::steady_clock::now();
 
   // note R1 and R2 are swapped to mimic 10X libraries
   pathR1_out = reformatFileName(pathR2, "intent_R1.fastq.gz");
@@ -127,7 +131,7 @@ int main(int argc, char *argv[]) {
   while(r2.peek() != EOF ) {
     in++;
     if((in % 1000) == 0)
-       update_stats(ok, bad_w1, shortread, corrected, bad_barcode);
+       update_stats(start_time, ok, bad_w1, shortread, corrected, bad_barcode);
 
     std::vector<std::string> lines_r1, lines_r2;
     std::vector<int> coords;
