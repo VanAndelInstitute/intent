@@ -2,4 +2,4 @@
 *.fastq
 *.fastq.gz
 bin/*
-test/*
+test/*.fastq.gz
