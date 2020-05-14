@@ -48,7 +48,7 @@ std::string reformatFileName(std::string n, std::string suff) {
 
 void init_stats_table() {
   std::cout << "\n\n| Total     | OK        | Poor W1   | Too Short | Corrected |Bad Barcode|\n";
-  std::cout <<      "|-----------|-----------|-----------|-----------|-----------|-----------|\n";
+  std::cout <<     "|-----------|-----------|-----------|-----------|-----------|-----------|\n";
 }
 
 void update_stats(std::chrono::steady_clock::time_point start, int a, int b, int c, int d, int e, int f) {
