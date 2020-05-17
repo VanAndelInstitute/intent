@@ -47,4 +47,4 @@ install:
 	cp $(APP_DIR)/$(TARGET) /usr/local/bin
 
 test:
-	$(APP_DIR)/$(TARGET) ./tests/test_R1.fastq.gz ./tests/test_R2.fastq.gz	
+	$(APP_DIR)/$(TARGET) ./test/test_R1.fastq.gz ./test/test_R2.fastq.gz	

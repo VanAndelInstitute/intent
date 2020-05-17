@@ -40,6 +40,14 @@ std::vector<std::string> readFour(zstr::istream &f)
   return lines;
 }
 
+void writeFour(zstr::ofstream &f, std::vector<std::string> lines)
+{
+  for(int i=0; i<4; i++) {
+    std::string l = lines[i] + "\n";
+    f.write(&l[0], l.length());
+  }
+}
+
 std::string reformatFileName(std::string n, std::string suff) {
   std::regex re("[Rr]*[12]*\\.fastq\\.gz");
   std::string fn = std::regex_replace(n, re, suff);
@@ -112,19 +120,19 @@ int main(int argc, char *argv[]) {
   pathR1_out = reformatFileName(pathR2, "intent_R1.fastq.gz");
   pathR2_out = reformatFileName(pathR1, "intent_R2.fastq.gz");
 
-  std::fstream r1_fs, r2_fs, r1_out_fs, r2_out_fs;
+  std::fstream r1_fs, r2_fs; //, r1_out_fs, r2_out_fs;
 
   r1_fs.open(pathR1, std::ios::in);
   r2_fs.open(pathR2, std::ios::in);
-  r1_out_fs.open(pathR1_out, std::ios::out);
-  r2_out_fs.open(pathR2_out, std::ios::out);
+  //r1_out_fs.open(pathR1_out, std::ios::out);
+  //r2_out_fs.open(pathR2_out, std::ios::out);
 
   zstr::istream r1(r1_fs),
                 r2(r2_fs);
 
-  zstr::ostream r1_out(r1_out_fs),
-                r2_out(r2_out_fs);
-
+  zstr::ofstream r1_out(pathR1_out);
+  zstr::ofstream r2_out(pathR2_out);
+  
   int in = 0, ok = 0, bad_w1 = 0, other = 0, shortread = 0, bad_barcode = 0, corrected = 0;
   init_stats_table();
 
@@ -158,15 +166,14 @@ int main(int argc, char *argv[]) {
         corrected++;
       }
       FastqRead r = format_barcode(bc, lines_r2[0], lines_r2[2], format);
-      r1_out << lines_r1[0] << std::endl;
-      r1_out << lines_r1[1] << std::endl;
-      r1_out << lines_r1[2] << std::endl;
-      r1_out << lines_r1[3] << std::endl;
 
-      r2_out << r.id << std::endl;
-      r2_out << r.read << std::endl;
-      r2_out << r.direction << std::endl;
-      r2_out << r.quality << std::endl;
+      writeFour(r1_out, lines_r1);
+      writeFour(r2_out, {r.id,
+                         r.read,
+                         r.direction,
+                         r.quality
+                        });
+
     } else {
       std::cout << "An unknown error occurred processing this read: \n" << 
       lines_r2[0] << std::endl << 
@@ -178,8 +185,8 @@ int main(int argc, char *argv[]) {
   }
   r1_fs.close();
   r2_fs.close();
-  r1_out_fs.close();
-  r2_out_fs.close();
+  //r1_out_fs.close();
+  //r2_out_fs.close();
 
   std::cout << "\n\nComplete. Job summary: " << std::endl <<
         "Reads: " << in <<std:: endl <<
