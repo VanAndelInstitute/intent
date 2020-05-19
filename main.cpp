@@ -49,7 +49,7 @@ void writeFour(zstr::ofstream &f, std::vector<std::string> lines)
 }
 
 std::string reformatFileName(std::string n, std::string suff) {
-  std::regex re("[Rr]*[12]*\\.fastq\\.gz");
+  std::regex re("[Rr][12].*\\.fastq\\.gz");
   std::string fn = std::regex_replace(n, re, suff);
   return(fn);
 }
@@ -167,12 +167,12 @@ int main(int argc, char *argv[]) {
       }
       FastqRead r = format_barcode(bc, lines_r2[0], lines_r2[2], format);
 
-      writeFour(r1_out, lines_r1);
-      writeFour(r2_out, {r.id,
+      writeFour(r1_out, {r.id,
                          r.read,
                          r.direction,
                          r.quality
                         });
+      writeFour(r2_out, lines_r1);
 
     } else {
       std::cout << "An unknown error occurred processing this read: \n" << 
