@@ -10,7 +10,7 @@
 #include "zstr.hpp"
 #include "seq_tools.h"
 
-std::string VERSION = "0.2.4";
+std::string VERSION = "0.2.5";
 
 void usage()
 {
